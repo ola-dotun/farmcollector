@@ -4,19 +4,102 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Demo</title>
+  <title>Farm Collector</title>
   <meta name="description" content="" />
   <meta name="viewport" content="width=device-width" />
   <base href="/" />
+  <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+
+    #greeting, #controls {
+      margin-bottom: 10px;
+    }
+  </style>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 </head>
 
 <body>
-<header>
-  <h1>Demo</h1>
-</header>
+<script>
+
+
+  $(document).ready(function ($) {
+    $.get('/seasons', (results => {
+      createSeasonOptions(results);
+    }));
+
+    $('#search-btn').on('click', () => {
+      const seasonPeriodId = $('#seasons').find(':selected').val();
+      $.get(`/reports/${seasonPeriodId}`, (data) => {
+        displayData(data);
+      })
+    });
+  })
+
+  function createSeasonOptions(seasons) {
+    let seasonOptions = '';
+    seasons.forEach(result => {
+      const option = '<option value=' + result.seasonPeriodId + '>' + result.season + '_' + result.periodStart + '_to_' + result.periodEnd + '</option>';
+      seasonOptions +=option;
+    })
+    $('#seasons').append(seasonOptions);
+  }
+
+  function displayData(rows) {
+    let displayData = ``;
+    const resultsOutputContainer = $('#results-output');
+    resultsOutputContainer.empty();
+    rows.forEach(row => {
+      displayData +=
+        `<tr>
+          <td>${row.season}</td>
+          <td>${row.periodStart}</td>
+          <td>${row.periodEnd}</td>
+          <td>${row.farmName}</td>
+          <td>${row.productName}</td>
+          <td>${row.area}</td>
+          <td>${row.datePlanted}</td>
+          <td>${row.expectedAmount}</td>
+          <td>${row.dateHarvested}</td>
+          <td>${row.harvestedAmount}</td>
+        </tr>`;
+    });
+
+    resultsOutputContainer.append(displayData);
+  }
+
+</script>
 <main>
   <div class="container">
-    <div id="greeting">Hello World</div>
+    <div id="greeting">Farm Collector</div>
+
+    <div id="controls">
+      <div id="seasons-container">
+        <label for="seasons">Seasons</label>
+        <select id="seasons"></select>
+
+        <button id="search-btn">Search</button>
+      </div>
+
+    </div>
+    <table>
+      <tr>
+        <th>Season</th>
+        <th>Season Start</th>
+        <th>Season End</th>
+        <th>Farm</th>
+        <th>Product</th>
+        <th>Area (acres)</th>
+        <th>Date Planted</th>
+        <th>Expected Amount (tons)</th>
+        <th>Date Harvested</th>
+        <th>Harvested Amount (tons)</th>
+      </tr>
+      <tbody id="results-output"></tbody>
+    </table>
   </div>
 </main>
 
