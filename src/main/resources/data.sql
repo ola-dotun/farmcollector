@@ -15,9 +15,10 @@ insert into products (product_name) values ( 'Potato' );
 
 delete from planted_products;
 insert into planted_products (area, farm_id, product_id, season_period_id, date_planted, expected_amount ) values ( 1000, 1, 1, 1, '2024-02-01', 200);
-insert into planted_products (area, farm_id, product_id, season_period_id, date_planted, expected_amount ) values ( 1000, 1, 2, 2, '2024-02-01', 200);
+insert into planted_products (area, farm_id, product_id, season_period_id, date_planted, expected_amount ) values ( 1000, 2, 1, 1, '2024-02-01', 200);
 insert into planted_products (area, farm_id, product_id, season_period_id, date_planted, expected_amount ) values ( 1000, 1, 2, 3, '2024-09-01', 200);
 
 delete from harvested_products;
 insert into harvested_products (farm_id, product_id, season_period_id, date_harvested, harvested_amount ) values ( 1, 1, 1, '2024-04-01', 250);
-insert into harvested_products (farm_id, product_id, season_period_id, date_harvested, harvested_amount ) values ( 2, 2, 2, '2024-08-01', 3050);
+insert into harvested_products (farm_id, product_id, season_period_id, date_harvested, harvested_amount ) values ( 2, 1, 1, '2024-08-01', 3050);
+insert into harvested_products (farm_id, product_id, season_period_id, date_harvested, harvested_amount ) values ( 1, 2, 3, '2024-08-01', 520);

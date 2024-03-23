@@ -26,27 +26,50 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @NamedNativeQuery(
 	name = "expected_and_harvested_products_by_season",
-	query = "select " +
-			"pp.season_period_id as seasonPeriodId, " +
-			"period_start as periodStart, " +
-			"period_end as periodEnd, " +
-			"farm_name as farmName," +
-			"product_name as productName, " +
-			"farm_name, " +
-			"season, " +
-			"area, " +
-			"date_planted as datePlanted, " +
-			"expected_amount as expectedAmount, " +
-			"hp.date_harvested as dateHarvested, " +
-			"hp.harvested_amount as harvestedAmount " +
-			"FROM SEASON_PERIODS sp " +
-			"inner join planted_products pp " +
-			"on pp.season_period_id = sp.season_period_id " +
-			"inner join harvested_products hp " +
-			"on hp.season_period_id = sp.season_period_id " +
-			"inner join products p on p.product_id = pp.product_id " +
-			"inner join farms f on f.farm_id = pp.farm_id " +
-			"where pp.season_period_id = :season_period_id",
+	query = """
+		SELECT planted.season_period_id AS seasonPeriodId,
+         planted.period_start AS periodStart,
+         planted.period_end AS periodEnd,
+         planted.farm_name AS farmName,
+         planted.product_name AS productName,
+         planted.season,
+         planted.area,
+         planted.date_planted AS datePlanted,
+         planted.expected_amount AS expectedAmount,
+         harvested.date_harvested AS dateHarvested,
+         harvested.harvested_amount AS harvestedAmount
+  FROM
+      (SELECT sp.season_period_id,
+              period_start,
+              period_end,
+              farm_name,
+              product_name,
+              season,
+              area,
+              date_planted,
+              expected_amount
+       FROM season_periods sp
+                INNER JOIN planted_products pp ON pp.season_period_id = sp.season_period_id
+                INNER JOIN products p ON p.product_id = pp.product_id
+                INNER JOIN farms f ON f.farm_id = pp.farm_id
+       WHERE pp.season_period_id = :season_period_id) planted
+          INNER JOIN
+      (SELECT sp.season_period_id,
+              period_start,
+              period_end,
+              farm_name,
+              product_name,
+              season,
+              date_harvested,
+              harvested_amount
+       FROM season_periods sp
+                INNER JOIN harvested_products hp ON hp.season_period_id = sp.season_period_id
+                INNER JOIN products p ON p.product_id = hp.product_id
+                INNER JOIN farms f ON f.farm_id = hp.farm_id
+       WHERE hp.season_period_id = :season_period_id) harvested ON planted.season_period_id = harvested.season_period_id
+          AND planted.farm_name = harvested.farm_name
+          AND planted.product_name = harvested.product_name
+			""",
 	resultSetMapping = "products_by_season"
 )
 @SqlResultSetMapping(
